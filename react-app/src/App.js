@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import ScrollUpButton from "react-scroll-up-button";
 
-class Test extends Component {
+class NavBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -15,9 +16,92 @@ class Test extends Component {
   }
   render() {
     return (
-      <div className="Test">
-      <button onClick={() => this.Update()} >TEST {this.props.value}</button>
+      <div className="NavBar">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="/">React-Training</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+
+      <li class="nav-item">
+      <a class="nav-link" href="#Elem1">Elem1</a>
+      </li>
+
+      <li class="nav-item">
+      <a class="nav-link" href="#Elem2">Elem2</a>
+      </li>
+
+      </ul>
+
       </div>
+      </nav>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      </div>
+
+      );
+  }
+}
+
+class Elem1 extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value:"null",
+    };
+  }
+
+  render() {
+    return (
+      <div className="Elem1" id="Elem1">
+      <h1>ELEM1</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      </div>
+
+      );
+  }
+}
+
+class Elem2 extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value:"null",
+    };
+  }
+
+  render() {
+    return (
+      <div className="Elem2" id="Elem2">
+      <h1>ELEM2</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      <h1>HEHEHEHEHE</h1>
+      </div>
+
       );
   }
 }
@@ -26,31 +110,27 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      number:[0,1],
+      value:null,
     };
+  }
+  renderNavBar(i) {
+    return <NavBar parentMethod={this.AddOne}/>;
+  }
+  renderElem1() {
+    return <Elem1 />;
+  }
+  renderElem2() {
+    return <Elem2 />;
+  }
 
-    this.AddOne = this.AddOne.bind(this);
-  }
-  renderTest(i) {
-    return <Test value={i} parentMethod={this.AddOne}/>;
-  }
-  AddOne(i) {
-    console.log("Add one called");
-    var tempState = this.state;
-    console.log(tempState);
-    tempState.number.push(i);
-    this.setState(tempState);
-    //number.map(temp=> console.log(temp));
-    //number.push(i);
-    //console.log(number);
-    //this.setState({ number: number })
-  }
 
   render() {
-    const { number } = this.state;
     return (
       <div className="App">
-      {number.map(temp => this.renderTest(temp))}
+      {this.renderNavBar()}
+      {this.renderElem1()}
+      {this.renderElem2()}
+      <ScrollUpButton />
       </div>
       );
   }
