@@ -1,17 +1,49 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
-import './App.css';
+import ReactDOM from 'react-dom';
+//import './App.css';
 
 // React Google Map
 import GoogleMapReact from 'google-map-react';
 
+//React Youtube
+import YouTube from 'react-youtube';
+
 const myKey = "AIzaSyDsXpag-Ll1qaf40KKxgGaEeUBlIf-rCII";
+const test_video_id = "kXlxlpAIzxQ";
+
 const ElemStyle = {
   'padding-top':'0px',
 };
 
-const AnyReactComponent = ({ text }) => <div>{text}</div>;
+//YOUTUBE
+class YoutubeExample extends React.Component {
+  render() {
+    const opts = {
+      height: '390',
+      width: '640',
+      playerVars: { // https://developers.google.com/youtube/player_parameters
+        autoplay: 1
+      }
+    };
+ 
+    return (
+      <YouTube
+        videoId={test_video_id}
+        opts={opts}
+        onReady={this._onReady}
+      />
+    );
+  }
+ 
+  _onReady(event) {
+    // access to player in all event handlers via event.target
+    event.target.pauseVideo();
+  }
+}
 
+//GOOGLE MAP
+const AnyReactComponent = ({ text }) => <div>{text}</div>;
 class SimpleMap extends Component {
   static defaultProps = {
     center: {
@@ -69,6 +101,14 @@ class NavBar extends Component {
 
       <li class="nav-item">
       <a class="nav-link" href="#Elem2" onClick={() => this.Update("Elem2")}>Elem2</a>
+      </li>
+
+      <li class="nav-item">
+      <a class="nav-link" href="#Google Map" onClick={() => this.Update("Google Map")}>Google Map</a>
+      </li>
+
+      <li class="nav-item">
+      <a class="nav-link" href="#Youtube" onClick={() => this.Update("Youtube")}>Youtube</a>
       </li>
 
       </ul>
@@ -183,6 +223,16 @@ class App extends Component {
       return <Elem2 />;
   }
 
+  renderGoogleMap() {
+    if(this.state.element === "Google Map")
+      return <SimpleMap />;
+  }
+
+  renderYoutube() {
+    if(this.state.element === "Youtube")
+      return <YoutubeExample />;
+  }
+
 
   render() {
     return (
@@ -190,6 +240,8 @@ class App extends Component {
       {this.renderNavBar()}
       {this.renderElem1()}
       {this.renderElem2()}
+      {this.renderGoogleMap()}
+      {this.renderYoutube()}
       </div>
       );
   }
