@@ -10,6 +10,8 @@ const ElemStyle = {
   'padding-top':'0px',
 };
 
+const AnyReactComponent = ({ text }) => <div>{text}</div>;
+
 class SimpleMap extends Component {
   static defaultProps = {
     center: {
