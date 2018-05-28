@@ -2,10 +2,6 @@ const express = require('express');
 const pSettle = require('p-settle');
 var elasticsearch = require('elasticsearch');
 
-//Course API
-const {getBrands} = require('node-car-api');
-const {getModels} = require('node-car-api');
-//END of Course API
 
 //ELASTICSEARCH CLIENT
 var client = new elasticsearch.Client({
@@ -20,26 +16,15 @@ const port = 9292;
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
 //API POPULATE
-app.get('/api/populate', (req, res) => {
-	console.log("API CALL POPULATE");
-
-	store_models(res);
-});
-
-//API SUV
-app.get('/api/suv', (req, res) => {
-	console.log("API CALL SUV");
-
+app.get('/api/create-account', (req, res) => {
+	console.log("create account");
 	var req_query = req.query;
 	console.log(req_query);
-
-	get_stored_models(res,req_query);
+	create_account(req_query);
 });
 
-async function get_stored_models(res,req_query){
 
-	//{ brand: 'BOLLORE', name: 'tamer' }
-
+async function create_account(res,req_query){
 	//DEFAULT QUERY
 	var query = {match_all:{}};
 	var must = [];
