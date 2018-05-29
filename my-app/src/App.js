@@ -6,8 +6,11 @@ import ReactDOM from 'react-dom';
 // React Google Map
 import GoogleMapReact from 'google-map-react';
 
-//React Youtube
+// React Youtube
 import YouTube from 'react-youtube';
+
+// React Popup
+import Popup from "reactjs-popup";
 
 const myKey = "AIzaSyDsXpag-Ll1qaf40KKxgGaEeUBlIf-rCII";
 const test_video_id = "kXlxlpAIzxQ";
@@ -15,6 +18,8 @@ const test_video_id = "kXlxlpAIzxQ";
 const ElemStyle = {
   'padding-top':'0px',
 };
+
+const API = '/api/';
 
 //YOUTUBE
 class YoutubeExample extends React.Component {
@@ -98,7 +103,7 @@ class LoginForm extends Component {
   }
 
   CreateAccount() {
-    alert("ALERTE CAPITAINE");
+    //fetch(API + 'create-account?email=test@hotmail.com&password=testpassword')
   }
   
   render () {
@@ -122,8 +127,8 @@ class LoginForm extends Component {
           </div>
 
           <br/>
-          
-          <a onClick={() => this.CreateAccount()}>Create account</a>
+
+          <a className = "text-info" onClick={() => this.CreateAccount()}>Create account</a>
         </form>
       </div>
     );
