@@ -104,6 +104,7 @@ class LoginForm extends Component {
 
   CreateAccount() {
     //fetch(API + 'create-account?email=test@hotmail.com&password=testpassword')
+    this.props.parentMethod("CreateAccount");
   }
   
   render () {
@@ -132,6 +133,119 @@ class LoginForm extends Component {
         </form>
       </div>
     );
+  }
+}
+
+class CreateAccount extends Component {
+
+  constructor () {
+    super();
+    this.state = {
+      email: '',
+      firstname: '',
+      lastname: '',
+      password: '',
+
+      formErrors: {email: 'is empty', firstname: 'is empty', lastname: 'is empty', password: 'is empty'},
+      emailValid: false,
+      firstnameValid: false,
+      lastnameValid: false,
+      passwordValid: false,
+
+      formValid: false
+    };
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  
+  createAccount(value) {
+    console.log(value);
+  }
+
+  handleChange (evt) {
+    // check it out: we get the evt.target.name (which will be either "email" or "password")
+    // and use it to target the key on our `state` object with the same name, using bracket syntax
+    //console.log([evt.target.name][0]);
+    this.setState({ [evt.target.name]: evt.target.value });
+    var value = evt.target.value;
+
+    switch([evt.target.name][0]) {
+      case 'email':
+        this.state.emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+        this.state.formErrors.email = this.state.emailValid ? '' : ' is invalid';
+        break;
+      case 'firstname':
+        this.state.firstnameValid = value.length >= 1;
+        this.state.formErrors.firstname = this.state.firstnameValid ? '' : ' is empty';
+        break;
+      case 'lastname':
+        this.state.lastnameValid = value.length >= 1;
+        this.state.formErrors.lastname = this.state.lastnameValid ? '' : ' is empty';
+        break;
+      case 'password':
+        this.state.passwordValid = value.length >= 6;
+        this.state.formErrors.password = this.state.passwordValid ? '': ' is too short';
+        break;
+      default:
+        break;
+    }
+
+    if(this.state.emailValid && this.state.firstnameValid && this.state.lastnameValid && this.state.passwordValid)
+      this.setState({formValid: true});
+    else
+      this.setState({formValid: false});
+    //if([evt.target.name][0] === 'email')
+        //this.setState({emailValid: this.isEmailValid(evt.target.value)});
+  }
+
+  handleSubmit(event) {
+    if(this.state.formValid === true)
+      this.createAccount({email:this.state.email,firstname:this.state.firstname,lastname:this.state.lastname,password:this.state.password});
+    alert('email : ' + this.state.formErrors.email + ' first name : ' + this.state.formErrors.firstname + ' last name : ' + this.state.formErrors.lastname + ' password : ' + this.state.formErrors.password);
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <div className="loginmodal-container">
+        <form onSubmit={this.handleSubmit}>
+
+          <div className="input-div" id="Email">
+            <label className="form-label">Email :</label>
+            <input type="text" name="email" onChange={this.handleChange} />
+          </div>
+
+          <br/>
+
+          <div className="input-div" id="FirstName">
+            <label className="form-label">First Name :</label>
+            <input type="text" name="firstname" onChange={this.handleChange} />
+          </div>
+
+          <br/>
+
+          <div className="input-div" id="LastName">
+            <label className="form-label">Last Name :</label>
+            <input type="text" name="lastname" onChange={this.handleChange} />
+          </div>
+
+          <br/>
+
+          <div className="input-div">
+            <label className="form-label" id="Password">Password :</label>
+            <input type="password" name="password" onChange={this.handleChange} />
+          </div>
+
+          <br/>
+
+          <div className="submit-button-div">
+          <input type="submit" value="Create Account" />
+          </div>
+
+        </form>
+      </div>
+
+      );
   }
 }
 
@@ -302,7 +416,12 @@ class App extends Component {
 
   renderForm() {
     if(this.state.element === "Form")
-      return <LoginForm />;
+      return <LoginForm parentMethod={this.ChangeElem}/>;
+  }
+
+  renderCreateAccount() {
+    if(this.state.element === "CreateAccount")
+      return <CreateAccount />;
   }
 
 
@@ -315,6 +434,7 @@ class App extends Component {
       {this.renderGoogleMap()}
       {this.renderYoutube()}
       {this.renderForm()}
+      {this.renderCreateAccount()}
       </div>
       );
   }
