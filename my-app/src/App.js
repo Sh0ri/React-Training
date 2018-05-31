@@ -160,6 +160,7 @@ class CreateAccount extends Component {
   
   createAccount(value) {
     console.log(value);
+    fetch(API + 'create-account?value='+value);
   }
 
   handleChange (evt) {
@@ -201,7 +202,8 @@ class CreateAccount extends Component {
   handleSubmit(event) {
     if(this.state.formValid === true)
       this.createAccount({email:this.state.email,firstname:this.state.firstname,lastname:this.state.lastname,password:this.state.password});
-    alert('email : ' + this.state.formErrors.email + ' first name : ' + this.state.formErrors.firstname + ' last name : ' + this.state.formErrors.lastname + ' password : ' + this.state.formErrors.password);
+    else
+      alert('email : ' + this.state.formErrors.email + ' first name : ' + this.state.formErrors.firstname + ' last name : ' + this.state.formErrors.lastname + ' password : ' + this.state.formErrors.password);
     event.preventDefault();
   }
 
@@ -239,7 +241,7 @@ class CreateAccount extends Component {
           <br/>
 
           <div className="submit-button-div">
-          <input type="submit" value="Create Account" />
+          <input type="submit" disabled={!this.state.formValid} value="Create Account" />
           </div>
 
         </form>

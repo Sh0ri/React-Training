@@ -20,15 +20,34 @@ app.get('/api/create-account', (req, res) => {
 	console.log("create account");
 	var req_query = req.query;
 	console.log(req_query);
-	//create_account(req_query);
+	create_account(res,req_query);
+});
+
+//API CREATE INDEX
+app.get('/api/create/index', (req, res) => {
+	console.log("API CALL CREATE INDEX");
+
+	client.indices.create({
+		index: 'account_test'
+	}, function(err, resp, status) {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log("create", resp);
+		}
+	});
+
+	res.send("DONE");
+
 });
 
 
 async function create_account(res,req_query){
 	client.index({
-		type: 'account',
-		body: row
+		type: 'account_test',
+		body: req_query.value
 	},function(err,resp,status) {
 		console.log(resp);
 	});
+	res.send("DONE");
 }
