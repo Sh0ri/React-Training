@@ -145,12 +145,14 @@ class CreateAccount extends Component {
       firstname: '',
       lastname: '',
       password: '',
+      secondPassword:'',
 
       formErrors: {email: 'is empty', firstname: 'is empty', lastname: 'is empty', password: 'is empty'},
       emailValid: false,
       firstnameValid: false,
       lastnameValid: false,
       passwordValid: false,
+      secondPasswordValid: false,
 
       formValid: false
     };
@@ -158,9 +160,31 @@ class CreateAccount extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
   
+  sendEmail(email) {
+    fetch(API + 'send?to='+email)
+    .then(response=>response.json())
+    .then(data=>{
+      console.log(data);
+    })
+  }
+
   createAccount(value) {
     console.log(value);
-    fetch(API + 'create-account?value='+value);
+    fetch(API + 'create-account?email='+value.email+'&firstname='+value.firstname+'&lastname='+value.lastname+'&password='+value.password)
+    .then(response => response.json())
+    .then(data => {
+      console.log(data)
+      if(data.result === 'done') {
+        alert('jobs done');
+        this.sendEmail(value.email);
+      }
+      else
+        alert('already exist');
+    });
+  }
+
+  checkPasswords(first, second) {
+    return first === second;
   }
 
   handleChange (evt) {
@@ -187,11 +211,14 @@ class CreateAccount extends Component {
         this.state.passwordValid = value.length >= 6;
         this.state.formErrors.password = this.state.passwordValid ? '': ' is too short';
         break;
+      case 'secondPassword':
+        this.state.secondPasswordValid = (value.length === this.state.password.length);
+        break;
       default:
         break;
     }
 
-    if(this.state.emailValid && this.state.firstnameValid && this.state.lastnameValid && this.state.passwordValid)
+    if(this.state.emailValid && this.state.firstnameValid && this.state.lastnameValid && this.state.passwordValid && this.state.secondPasswordValid)
       this.setState({formValid: true});
     else
       this.setState({formValid: false});
@@ -200,10 +227,10 @@ class CreateAccount extends Component {
   }
 
   handleSubmit(event) {
-    if(this.state.formValid === true)
+    if(this.state.formValid === true && this.checkPasswords(this.state.password,this.state.secondPassword))
       this.createAccount({email:this.state.email,firstname:this.state.firstname,lastname:this.state.lastname,password:this.state.password});
     else
-      alert('email : ' + this.state.formErrors.email + ' first name : ' + this.state.formErrors.firstname + ' last name : ' + this.state.formErrors.lastname + ' password : ' + this.state.formErrors.password);
+      alert('not the same passwords');
     event.preventDefault();
   }
 
@@ -236,6 +263,11 @@ class CreateAccount extends Component {
           <div className="input-div">
             <label className="form-label" id="Password">Password :</label>
             <input type="password" name="password" onChange={this.handleChange} />
+          </div>
+
+          <div className="input-div">
+            <label className="form-label" id="SecondPassword">Second Password :</label>
+            <input type="password" name="secondPassword" onChange={this.handleChange} />
           </div>
 
           <br/>
