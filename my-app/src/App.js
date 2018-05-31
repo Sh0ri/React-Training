@@ -170,7 +170,7 @@ class CreateAccount extends Component {
 
   createAccount(value) {
     console.log(value);
-    fetch(API + 'create-account?email='+value.email+'&firstname='+value.firstname+'&lastname='+value.lastname+'&password='+value.password)
+    fetch(API + 'create-account?email='+value.email+'&firstname='+value.firstname+'&lastname='+value.lastname+'&password='+value.password+'&verified=false')
     .then(response => response.json())
     .then(data => {
       console.log(data)

@@ -13,15 +13,15 @@ var client = new elasticsearch.Client({
 
 //SMTP FOR EMAIL
 var smtpTransport = nodemailer.createTransport({
-    service: "Gmail",
-    auth: {
-        user: "quent.dasilva@gmail.com",
-        pass: "Candice78780"
-    }
+	service: "Gmail",
+	auth: {
+		user: "quent.dasilva@gmail.com",
+		pass: "Candice78780"
+	}
 });
 var rand,mailOptions,host,link;
 
-
+const connection_adress = "http://localhost:3000/#Form";
 const app = express();
 const port = 9292;
 var clickHere = "Click here to verify";
@@ -29,46 +29,50 @@ var clickHere = "Click here to verify";
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
 app.get('/api/send',function(req,res){
-        rand=Math.floor((Math.random() * 100) + 54);
-    host="localhost:9292";
-    link=req.get('host')+"/api/verify?id="+rand;
-    mailOptions={
-        to : req.query.to,
-        subject : "Please confirm your Email account",
-        html : "<h3>Verify your email</h3><br> Please Click on the link to verify your email. <a href="+link+">https://www.google.com/</a>" 
-    }
-    console.log(mailOptions);
-    smtpTransport.sendMail(mailOptions, function(error, response){
-     if(error){
-            console.log(error);
-        res.end("error");
-     }else{
-            console.log("Message sent: " + response.message);
-        res.end("sent");
-         }
-});
+	rand=Math.floor((Math.random() * 100) + 54);
+	host="localhost:9292";
+	link=req.get('host')+"/api/verify?id="+rand;
+	mailOptions={
+		to : req.query.to,
+		subject : "Please confirm your Email account",
+		html : "<h3>Verify your email</h3><br> Please Click on the link to verify your email. <br> "+link+" <br> <label>If the link doesn't work, copy it into your navigator</label>" 
+	}
+	console.log(mailOptions);
+	smtpTransport.sendMail(mailOptions, function(error, response){
+		if(error){
+			console.log(error);
+			res.end("error");
+		}else{
+			console.log("Message sent: " + response.message);
+			create_email_to_verify(mailOptions,rand);
+			res.end("sent");
+		}
+	});
 });
 
 app.get('/api/verify',function(req,res){
-console.log(req.protocol+":/"+req.get('host'));
-if((req.protocol+"://"+req.get('host'))==("http://"+host))
-{
-    console.log("Domain is matched. Information is from Authentic email");
-    if(req.query.id==rand)
-    {
-        console.log("email is verified");
-        res.end("<h1>Email "+mailOptions.to+" is been Successfully verified");
-    }
-    else
-    {
-        console.log("email is not verified");
-        res.end("<h1>Bad Request</h1>");
-    }
-}
-else
-{
-    res.end("<h1>Request is from unknown source");
-}
+	console.log(req.protocol+":/"+req.get('host'));
+	if((req.protocol+"://"+req.get('host'))==("http://"+host))
+	{
+		console.log("Domain is matched. Information is from Authentic email");
+		var result = check_if_email_to_verify_exists(req.query.id);
+		console.log("RESULT");
+		console.log(result);
+		if(result !== null)
+		{
+			console.log("email is verified");
+			res.end("<h3>Email has been Successfully verified,<br><a href="+connection_adress+">Click here to connect</a>");
+		}
+		else
+		{
+			console.log("email is not verified");
+			res.end("<h1>Bad Request</h1>");
+		}
+	}
+	else
+	{
+		res.end("<h1>Request is from unknown source");
+	}
 });
 
 //API POPULATE
@@ -103,11 +107,41 @@ app.get('/api/create/index', (req, res) => {
 
 });
 
+//API CREATE INDEX EMAIL TO VERIFY
+app.get('/api/create/index/email', (req, res) => {
+
+	console.log("CREATE INDEX");
+
+	client.indices.create({
+		index: 'email_to_verity'
+	}, function(err, resp, status) {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log("create", resp);
+		}
+	});
+
+	res.send("DONE");
+
+});
+
 //API DELETE INDEX
 app.get('/api/delete/index', (req, res) => {
 	console.log("DELETE INDEX");
 
 	client.indices.delete({index: 'account_test'},function(err,resp,status) {  
+		console.log("delete",resp);
+	});
+
+	res.send("DONE");
+});
+
+//API DELETE INDEX EMAIL TO VERIFY
+app.get('/api/delete/index/email', (req, res) => {
+	console.log("DELETE INDEX");
+
+	client.indices.delete({index: 'email_to_verity'},function(err,resp,status) {  
 		console.log("delete",resp);
 	});
 
@@ -140,10 +174,30 @@ async function create_account(res,req_query){
 	}
 }
 
+async function create_email_to_verify(emailAccount, random){
+
+	console.log("CREATE EMAIL TO VERIFY");
+	return new Promise((resolve, reject) => {
+		client.index({
+			index: 'email_to_verity',
+			type: 'email_to_verify',
+			body: {
+				email:emailAccount.to,
+				random:random
+			}
+		},function(err,resp,status) {
+			console.log(resp);
+		});
+		resolve({result:'done'});
+	});
+
+	
+}
+
 async function delete_all_accounts(res) {
 	client.delete({
-	  index: 'account_test',
-	  type: 'account'
+		index: 'account_test',
+		type: 'account'
 	});
 	res.send("DONE");
 }
@@ -167,6 +221,29 @@ async function check_if_account_exists(obj) {
 			}
 		}).then(function (body) {
 			resolve(body.hits.total);
+		});
+
+		//resolve(acc);
+	});
+}
+
+async function check_if_email_to_verify_exists(email, random) {
+	console.log("GET EMAIL TO VERIFY");
+	return new Promise((resolve, reject) => {
+
+		client.search({
+			index: 'email_to_verity',
+			type: 'email_to_verify',
+			size: 200,
+			body: {
+				query: {
+					"bool": {
+						"must": {"match":{ "random":  random }}
+					}
+				}
+			}
+		}).then(function (body) {
+			resolve(body.hits.hits);
 		});
 
 		//resolve(acc);
