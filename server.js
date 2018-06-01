@@ -51,16 +51,55 @@ app.get('/api/send',function(req,res){
 });
 
 app.get('/api/verify',function(req,res){
+	verify(req,res);
+});
+
+async function validate_account(email) {
+	
+	const result = await get_account_by_email(email);
+	pSettle(result).then(result => {
+		let temp_value = result[0].value._id;
+		console.log("id : " + temp_value);
+
+		client.update({
+			index: 'account_test',
+			type: 'account',
+			id: temp_value,
+			body: {
+				script: 'ctx._source.verified = \"true\"'
+			}
+		})
+	});
+	//console.log("MAMA : " + result["_id"]);	
+	/*
+	var script = "ctx._source.verified = \"true\";";
+
+	client.updateByQuery({
+		index: 'account_test',
+		type: 'account_test',
+		body: {
+			query: query,
+			script: script
+		}
+	})
+	*/
+}
+
+async function verify(req,res) {
 	console.log(req.protocol+":/"+req.get('host'));
 	if((req.protocol+"://"+req.get('host'))==("http://"+host))
 	{
 		console.log("Domain is matched. Information is from Authentic email");
-		var result = check_if_email_to_verify_exists(req.query.id);
+		const result = await check_if_email_to_verify_exists(req.query.id);
+		pSettle(result).then(result => {
+			console.log('ok result');
+		});
 		console.log("RESULT");
 		console.log(result);
-		if(result !== null)
+		if(result.length > 0)
 		{
 			console.log("email is verified");
+			validate_account(result[0]._source.email);
 			res.end("<h3>Email has been Successfully verified,<br><a href="+connection_adress+">Click here to connect</a>");
 		}
 		else
@@ -73,7 +112,7 @@ app.get('/api/verify',function(req,res){
 	{
 		res.end("<h1>Request is from unknown source");
 	}
-});
+}
 
 //API POPULATE
 app.get('/api/create-account', (req, res) => {
@@ -206,9 +245,16 @@ async function check_if_account_exists(obj) {
 	console.log("GET ACCOUNT");
 	return new Promise((resolve, reject) => {
 
+		/*
 		var query = {
 			"bool": {
 				"must": [{"match":{ "email":  obj.email }},{"match":{ "firstname":  obj.firstname }},{"match":{ "lastname":  obj.lastname }}]
+			}
+		}
+		*/
+		var query = {
+			"bool": {
+				"must": {"match":{ "email":  obj.email }}
 			}
 		}
 
@@ -227,20 +273,49 @@ async function check_if_account_exists(obj) {
 	});
 }
 
-async function check_if_email_to_verify_exists(email, random) {
+async function get_account_by_email(email) {
+	console.log("GET ACCOUNT");
+	return new Promise((resolve, reject) => {
+
+		var query = {
+			"bool": {
+				"must": {"match":{ "email":  email }}
+			}
+		}
+
+		client.search({
+			index: 'account_test',
+			type: 'account',
+			size: 200,
+			body: {
+				query: query
+			}
+		}).then(function (body) {
+			resolve(body.hits.hits);
+		});
+
+		//resolve(acc);
+	});
+}
+
+async function check_if_email_to_verify_exists(random) {
 	console.log("GET EMAIL TO VERIFY");
 	return new Promise((resolve, reject) => {
+
+		var query = {
+			"bool": {
+				"must": {"match":{ "random":  random }}
+			}
+		};
+
+		console.log(query);
 
 		client.search({
 			index: 'email_to_verity',
 			type: 'email_to_verify',
 			size: 200,
 			body: {
-				query: {
-					"bool": {
-						"must": {"match":{ "random":  random }}
-					}
-				}
+				query: query
 			}
 		}).then(function (body) {
 			resolve(body.hits.hits);
