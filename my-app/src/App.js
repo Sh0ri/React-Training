@@ -89,6 +89,7 @@ class LoginForm extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.checkIfAccountExist = this.checkIfAccountExist.bind(this);
   }
   
   handleChange (evt) {
@@ -97,9 +98,20 @@ class LoginForm extends Component {
     this.setState({ [evt.target.name]: evt.target.value });
   }
 
+  checkIfAccountExist() {
+
+  }
+
   handleSubmit(event) {
-    alert('A name was submitted: ' + this.state.email);
+    //alert('A name was submitted: ' + this.state.email);
     event.preventDefault();
+
+    fetch(API + 'checkIfAccountExist?email='+this.state.email+'&password='+this.state.password)
+    .then(response=>response.json())
+    .then(data=>{
+      console.log(data);
+      alert(data);
+    })
   }
 
   CreateAccount() {

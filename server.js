@@ -100,7 +100,7 @@ async function verify(req,res) {
 		{
 			console.log("email is verified");
 			validate_account(result[0]._source.email);
-			res.end("<h3>Email has been Successfully verified,<br><a href="+connection_adress+">Click here to connect</a>");
+			res.end("<h3>Email has been Successfully verified</h3><br><a href="+connection_adress+">Click here to connect</a>");
 		}
 		else
 		{
@@ -110,7 +110,7 @@ async function verify(req,res) {
 	}
 	else
 	{
-		res.end("<h1>Request is from unknown source");
+		res.end("<h1>Request is from unknown source</h1>");
 	}
 }
 
@@ -120,6 +120,14 @@ app.get('/api/create-account', (req, res) => {
 	var req_query = req.query;
 	console.log(req_query);
 	create_account(res,req_query);
+});
+
+//API CHECK IF ACCOUNT EXISTS
+app.get('/api/checkIfAccountExist', (req, res) => {
+	console.log("checkIfAccountExist");
+	var req_query = req.query;
+	console.log(req_query);
+	connect(res,req_query);
 });
 
 //API GET ALL ACCOUNTS
@@ -271,6 +279,31 @@ async function check_if_account_exists(obj) {
 
 		//resolve(acc);
 	});
+}
+
+async function connect(res,obj) {
+	console.log("GET ACCOUNT");
+
+		var query = {
+			"bool": {
+				"must": [{"match":{ "email":  obj.email }},{"match":{ "password":  obj.password }}]
+			}
+		}
+
+		client.search({
+			index: 'account_test',
+			type: 'account',
+			size: 200,
+			body: {
+				query: query
+			}
+		}).then(function (body) {
+			if(body.hits.total > 0)
+				res.send({result:body.hits.hits[0]._source});
+			else
+				res.send({result:false});
+		});
+
 }
 
 async function get_account_by_email(email) {
