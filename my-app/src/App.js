@@ -31,16 +31,16 @@ class YoutubeExample extends React.Component {
         autoplay: 1
       }
     };
- 
+
     return (
       <YouTube
-        videoId={test_video_id}
-        opts={opts}
-        onReady={this._onReady}
+      videoId={test_video_id}
+      opts={opts}
+      onReady={this._onReady}
       />
-    );
+      );
   }
- 
+
   _onReady(event) {
     // access to player in all event handlers via event.target
     event.target.pauseVideo();
@@ -62,19 +62,19 @@ class SimpleMap extends Component {
     return (
       // Important! Always set the container height explicitly
       <div style={{ height: '100vh', width: '100%' }}>
-        <GoogleMapReact
-          bootstrapURLKeys={{ key: myKey }}
-          defaultCenter={this.props.center}
-          defaultZoom={this.props.zoom}
-        >
-          <AnyReactComponent
-            lat={59.955413}
-            lng={30.337844}
-            text={'Kreyser Avrora'}
-          />
-        </GoogleMapReact>
+      <GoogleMapReact
+      bootstrapURLKeys={{ key: myKey }}
+      defaultCenter={this.props.center}
+      defaultZoom={this.props.zoom}
+      >
+      <AnyReactComponent
+      lat={59.955413}
+      lng={30.337844}
+      text={'Kreyser Avrora'}
+      />
+      </GoogleMapReact>
       </div>
-    );
+      );
   }
 }
 
@@ -89,17 +89,12 @@ class LoginForm extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.checkIfAccountExist = this.checkIfAccountExist.bind(this);
   }
   
   handleChange (evt) {
     // check it out: we get the evt.target.name (which will be either "email" or "password")
     // and use it to target the key on our `state` object with the same name, using bracket syntax
     this.setState({ [evt.target.name]: evt.target.value });
-  }
-
-  checkIfAccountExist() {
-
   }
 
   handleSubmit(event) {
@@ -118,33 +113,38 @@ class LoginForm extends Component {
     //fetch(API + 'create-account?email=test@hotmail.com&password=testpassword')
     this.props.parentMethod("CreateAccount");
   }
+
+  ForgotPassword() {
+    this.props.parentMethod("ForgotPassword");
+  }
   
   render () {
     return (
       <div className="loginmodal-container">
-        <form onSubmit={this.handleSubmit}>
-          <div className="input-div">
-            <label className="form-label">Email :</label>
-            <input type="text" name="email" onChange={this.handleChange} />
-          </div>
-
-          <br/>
-
-          <div className="input-div">
-            <label className="form-label">Password :</label>
-            <input type="password" name="password" onChange={this.handleChange} />
-          </div>
-
-          <div className="submit-button-div">
-          <input type="submit" value="Submit" />
-          </div>
-
-          <br/>
-
-          <a className = "text-info" onClick={() => this.CreateAccount()}>Create account</a>
-        </form>
+      <form onSubmit={this.handleSubmit}>
+      <div className="input-div">
+      <label className="form-label">Email :</label>
+      <input type="text" name="email" onChange={this.handleChange} />
       </div>
-    );
+
+      <br/>
+
+      <div className="input-div">
+      <label className="form-label">Password :</label>
+      <input type="password" name="password" onChange={this.handleChange} />
+      </div>
+
+      <div className="submit-button-div">
+      <input type="submit" value="Submit" />
+      </div>
+
+      <br/>
+
+      <a className = "text-info" onClick={() => this.CreateAccount()}>Create account </a>
+      <a className = "text-info" onClick={() => this.ForgotPassword()}> Forgot Password ?</a>
+      </form>
+      </div>
+      );
   }
 }
 
@@ -208,26 +208,26 @@ class CreateAccount extends Component {
 
     switch([evt.target.name][0]) {
       case 'email':
-        this.state.emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
-        this.state.formErrors.email = this.state.emailValid ? '' : ' is invalid';
-        break;
+      this.state.emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+      this.state.formErrors.email = this.state.emailValid ? '' : ' is invalid';
+      break;
       case 'firstname':
-        this.state.firstnameValid = value.length >= 1;
-        this.state.formErrors.firstname = this.state.firstnameValid ? '' : ' is empty';
-        break;
+      this.state.firstnameValid = value.length >= 1;
+      this.state.formErrors.firstname = this.state.firstnameValid ? '' : ' is empty';
+      break;
       case 'lastname':
-        this.state.lastnameValid = value.length >= 1;
-        this.state.formErrors.lastname = this.state.lastnameValid ? '' : ' is empty';
-        break;
+      this.state.lastnameValid = value.length >= 1;
+      this.state.formErrors.lastname = this.state.lastnameValid ? '' : ' is empty';
+      break;
       case 'password':
-        this.state.passwordValid = value.length >= 6;
-        this.state.formErrors.password = this.state.passwordValid ? '': ' is too short';
-        break;
+      this.state.passwordValid = value.length >= 6;
+      this.state.formErrors.password = this.state.passwordValid ? '': ' is too short';
+      break;
       case 'secondPassword':
-        this.state.secondPasswordValid = (value.length === this.state.password.length);
-        break;
+      this.state.secondPasswordValid = (value.length === this.state.password.length);
+      break;
       default:
-        break;
+      break;
     }
 
     if(this.state.emailValid && this.state.firstnameValid && this.state.lastnameValid && this.state.passwordValid && this.state.secondPasswordValid)
@@ -236,50 +236,50 @@ class CreateAccount extends Component {
       this.setState({formValid: false});
     //if([evt.target.name][0] === 'email')
         //this.setState({emailValid: this.isEmailValid(evt.target.value)});
-  }
+      }
 
-  handleSubmit(event) {
-    if(this.state.formValid === true && this.checkPasswords(this.state.password,this.state.secondPassword))
-      this.createAccount({email:this.state.email,firstname:this.state.firstname,lastname:this.state.lastname,password:this.state.password});
-    else
-      alert('not the same passwords');
-    event.preventDefault();
-  }
+      handleSubmit(event) {
+        if(this.state.formValid === true && this.checkPasswords(this.state.password,this.state.secondPassword))
+          this.createAccount({email:this.state.email,firstname:this.state.firstname,lastname:this.state.lastname,password:this.state.password});
+        else
+          alert('not the same passwords');
+        event.preventDefault();
+      }
 
-  render() {
-    return (
-      <div className="loginmodal-container">
-        <form onSubmit={this.handleSubmit}>
+      render() {
+        return (
+          <div className="loginmodal-container">
+          <form onSubmit={this.handleSubmit}>
 
           <div className="input-div" id="Email">
-            <label className="form-label">Email :</label>
-            <input type="text" name="email" onChange={this.handleChange} />
+          <label className="form-label">Email :</label>
+          <input type="text" name="email" onChange={this.handleChange} />
           </div>
 
           <br/>
 
           <div className="input-div" id="FirstName">
-            <label className="form-label">First Name :</label>
-            <input type="text" name="firstname" onChange={this.handleChange} />
+          <label className="form-label">First Name :</label>
+          <input type="text" name="firstname" onChange={this.handleChange} />
           </div>
 
           <br/>
 
           <div className="input-div" id="LastName">
-            <label className="form-label">Last Name :</label>
-            <input type="text" name="lastname" onChange={this.handleChange} />
+          <label className="form-label">Last Name :</label>
+          <input type="text" name="lastname" onChange={this.handleChange} />
           </div>
 
           <br/>
 
           <div className="input-div">
-            <label className="form-label" id="Password">Password :</label>
-            <input type="password" name="password" onChange={this.handleChange} />
+          <label className="form-label" id="Password">Password :</label>
+          <input type="password" name="password" onChange={this.handleChange} />
           </div>
 
           <div className="input-div">
-            <label className="form-label" id="SecondPassword">Second Password :</label>
-            <input type="password" name="secondPassword" onChange={this.handleChange} />
+          <label className="form-label" id="SecondPassword">Second Password :</label>
+          <input type="password" name="secondPassword" onChange={this.handleChange} />
           </div>
 
           <br/>
@@ -288,7 +288,73 @@ class CreateAccount extends Component {
           <input type="submit" disabled={!this.state.formValid} value="Create Account" />
           </div>
 
-        </form>
+          </form>
+          </div>
+
+          );
+      }
+    }
+
+    class ForgotPassword extends Component {
+
+      constructor () {
+        super();
+        this.state = {
+          email: '',
+          isEmailValid: 'false'
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+      }
+
+      sendEmail(email) {
+        fetch(API + 'sendPassword?to='+email)
+        .then(response=>response.json())
+        .then(data=>{
+          console.log(data);
+        })
+      }
+
+      handleChange (evt) {
+    // check it out: we get the evt.target.name (which will be either "email" or "password")
+    // and use it to target the key on our `state` object with the same name, using bracket syntax
+    //console.log([evt.target.name][0]);
+    this.setState({ [evt.target.name]: evt.target.value });
+    var value = evt.target.value;
+
+    switch([evt.target.name][0]) {
+      case 'email':
+      this.state.isEmailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+      break;
+
+      default:
+      break;
+    }
+  }
+
+  handleSubmit(event) {
+
+    console.log("send email");
+    this.sendEmail(this.state.email);
+    
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <div className="loginmodal-container">
+      <form onSubmit={this.handleSubmit}>
+
+      <div className="input-div" id="Email">
+      <label className="form-label">Email :</label>
+      <input type="text" name="email" onChange={this.handleChange} />
+      </div>
+
+      <div className="submit-button-div">
+      <input type="submit" disabled={!this.state.isEmailValid} value="Send Email" />
+      </div>
+
+      </form>
       </div>
 
       );
@@ -342,11 +408,11 @@ class NavBar extends Component {
       </div>
       </nav>
       <a style={{position:'fixed',
-        right:'20px',
-        top:'20px'}} href="#">TOP</a>
-        </div>
+      right:'20px',
+      top:'20px'}} href="#">TOP</a>
+      </div>
 
-        );
+      );
   }
 }
 
@@ -470,6 +536,11 @@ class App extends Component {
       return <CreateAccount />;
   }
 
+  renderForgotPassword() {
+    if(this.state.element === "ForgotPassword")
+      return <ForgotPassword />;
+  }
+
 
   render() {
     return (
@@ -481,6 +552,7 @@ class App extends Component {
       {this.renderYoutube()}
       {this.renderForm()}
       {this.renderCreateAccount()}
+      {this.renderForgotPassword()}
       </div>
       );
   }

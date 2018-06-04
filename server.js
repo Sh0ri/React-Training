@@ -54,6 +54,38 @@ app.get('/api/verify',function(req,res){
 	verify(req,res);
 });
 
+app.get('/api/sendPassword',function(req,res){
+	sendPassword(req,res);
+});
+
+async function sendPassword(req,res) {
+	host="localhost:9292";
+	const result = await get_account_by_email(req.query.to);
+	
+	let password = "";
+	pSettle(result).then(result => {
+		console.log("result : " + result[0].value._source.password);
+		password = result[0].value._source.password;
+	}).then(() => {
+		mailOptions={
+			to : req.query.to,
+			subject : "Your Password",
+			html : "<h1>Your password : </h1>"+password, 
+		}
+		console.log(mailOptions);
+		smtpTransport.sendMail(mailOptions, function(error, response){
+			if(error){
+				console.log(error);
+				res.end("error");
+			}else{
+				console.log("Message sent: " + response.message);
+				res.end("sent");
+			}
+		});
+	})
+	
+}
+
 async function validate_account(email) {
 	
 	const result = await get_account_by_email(email);
@@ -284,25 +316,25 @@ async function check_if_account_exists(obj) {
 async function connect(res,obj) {
 	console.log("GET ACCOUNT");
 
-		var query = {
-			"bool": {
-				"must": [{"match":{ "email":  obj.email }},{"match":{ "password":  obj.password }}]
-			}
+	var query = {
+		"bool": {
+			"must": [{"match":{ "email":  obj.email }},{"match":{ "password":  obj.password }}]
 		}
+	}
 
-		client.search({
-			index: 'account_test',
-			type: 'account',
-			size: 200,
-			body: {
-				query: query
-			}
-		}).then(function (body) {
-			if(body.hits.total > 0)
-				res.send({result:body.hits.hits[0]._source});
-			else
-				res.send({result:false});
-		});
+	client.search({
+		index: 'account_test',
+		type: 'account',
+		size: 200,
+		body: {
+			query: query
+		}
+	}).then(function (body) {
+		if(body.hits.total > 0)
+			res.send({result:body.hits.hits[0]._source});
+		else
+			res.send({result:false});
+	});
 
 }
 
