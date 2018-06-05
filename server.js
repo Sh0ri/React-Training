@@ -50,6 +50,19 @@ app.get('/api/send',function(req,res){
 	});
 });
 
+app.get('/api/ping',function(req,res){
+	client.ping({
+  // ping usually has a 3000ms timeout
+  requestTimeout: 1000
+}, function (error) {
+	if (error) {
+		console.trace('elasticsearch cluster is down!');
+	} else {
+		console.log('All is well');
+	}
+});
+});
+
 app.get('/api/verify',function(req,res){
 	verify(req,res);
 });
