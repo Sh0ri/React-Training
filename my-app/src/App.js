@@ -20,6 +20,7 @@ const ElemStyle = {
 };
 
 const API = '/api/';
+var CurrentUserID = 0;
 
 //YOUTUBE
 class YoutubeExample extends React.Component {
@@ -104,8 +105,11 @@ class LoginForm extends Component {
     fetch(API + 'checkIfAccountExist?email='+this.state.email+'&password='+this.state.password)
     .then(response=>response.json())
     .then(data=>{
-      console.log(data);
-      alert(data);
+      if(data.result !== false) {
+        window.sessionStorage.setItem("currentUser", JSON.stringify(data.result));
+        console.log(data.result);
+        this.props.parentMethod("UserHome");
+      }
     })
   }
 
@@ -361,6 +365,45 @@ class CreateAccount extends Component {
   }
 }
 
+class UserHome extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentUser:null,
+    };
+  }
+
+  componentDidMount() {
+    if(window.sessionStorage.getItem("currentUser")!==null){
+      //this.setState({currentUser:JSON.parse(window.sessionStorage.getItem("currentUser"))})
+      var obj = JSON.parse(window.sessionStorage.getItem("currentUser"));
+      
+      this.state.currentUser = obj;
+      console.log(this.state);
+    }
+  }
+
+  render() {
+    return (
+      <div className="loginmodal-container">
+      <form onSubmit={this.handleSubmit}>
+
+      <div className="input-div" id="Email">
+      <label className="form-label">Email :</label>
+      <input type="text" name="email" onChange={this.handleChange} />
+      </div>
+
+      <div className="submit-button-div">
+      <input type="submit" disabled={!this.state.isEmailValid} value="Send Email" />
+      </div>
+
+      </form>
+      </div>
+
+      );
+  }
+}
+
 class NavBar extends Component {
   constructor(props) {
     super(props);
@@ -369,7 +412,7 @@ class NavBar extends Component {
     };
   }
 
-  Update(elem_name){
+  Update(elem_name,elem_props){
     this.props.parentMethod(elem_name);
   }
   render() {
@@ -541,6 +584,11 @@ class App extends Component {
       return <ForgotPassword />;
   }
 
+  renderUserHome() {
+    if(this.state.element === "UserHome")
+      return <UserHome />;
+  }
+
 
   render() {
     return (
@@ -553,6 +601,7 @@ class App extends Component {
       {this.renderForm()}
       {this.renderCreateAccount()}
       {this.renderForgotPassword()}
+      {this.renderUserHome()}
       </div>
       );
   }
