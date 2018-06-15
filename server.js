@@ -71,6 +71,42 @@ app.get('/api/sendPassword',function(req,res){
 	sendPassword(req,res);
 });
 
+app.get('/api/askNewRole',function(req,res){
+	askNewRole(req,res);
+});
+
+async function askNewRole(req,res) {
+	host="localhost:9292";
+	const result = await get_account_by_email(req.query.email);
+	var passwordIsCorrect = false;
+
+	pSettle(result).then(result => {
+		console.log("result : " + result[0].value._source.password);
+		password = (result[0].value._source.password == req.query.password);
+	}).then(() => {
+		if(password){
+			mailOptions={
+				//ADMIN ACCOUNT
+				to : "quentindasilva@icloud.com",
+				subject : "New request",
+				html : "<h1>The email : </h1>"+req.query.email+"<h1>The role : "+req.query.role+" </h1><h1>The region : "+req.query.region+" </h1>", 
+			}
+			console.log(mailOptions);
+			smtpTransport.sendMail(mailOptions, function(error, response){
+				if(error){
+					console.log(error);
+					res.end("error");
+				}else{
+					console.log("Message sent: " + response.message);
+					res.end("sent");
+				}
+			});
+		}
+		
+	})
+	
+}
+
 async function sendPassword(req,res) {
 	host="localhost:9292";
 	const result = await get_account_by_email(req.query.to);
@@ -83,7 +119,7 @@ async function sendPassword(req,res) {
 		mailOptions={
 			to : req.query.to,
 			subject : "Your Password",
-			html : "<h1>Your password : </h1>"+password, 
+			html : "<h1>Your password : "+password+" </h1>", 
 		}
 		console.log(mailOptions);
 		smtpTransport.sendMail(mailOptions, function(error, response){

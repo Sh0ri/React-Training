@@ -392,14 +392,14 @@ class UserHome extends Component {
   render() {
     //this.setState({currentUser:window.sessionStorage.getItem("currentUser")})
     const { currentUser } = this.state;
-        return (
-          <div>
-          <label>Hello {currentUser.firstname} !</label>
-          <a className = "text-info" onClick={() => this.askNewRole()}>Ask a new role</a>
-          </div>
+    return (
+      <div>
+      <label>Hello {currentUser.firstname} !</label>
+      <a className = "text-info" onClick={() => this.askNewRole()}>Ask a new role</a>
+      </div>
 
-          );
-      }
+      );
+  }
 }
 
 class NewRole extends Component {
@@ -415,6 +415,14 @@ class NewRole extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
   
+  sendEmail(email) {
+    console.log("le role : " + this.state.role);
+    fetch(API + 'askNewRole?email='+email+'&role='+this.state.role+'&region='+this.state.region+'&password='+this.state.currentUser.password)
+    .then(response=>response.json())
+    .then(data=>{
+      console.log(data);
+    })
+  }
 
   componentDidMount() {
     if(window.sessionStorage.getItem("currentUser")!==null){
@@ -425,9 +433,7 @@ class NewRole extends Component {
     }
   }
   handleSubmit(event){
-    console.log("HEHEHEHEE");
-    console.log(this.state);
-    alert(this.state.currentUser.firstname + " send a request" + this.state.role + " / " + this.state.region);
+    this.sendEmail(this.state.currentUser.email);
     event.preventDefault();
   }
 
@@ -438,37 +444,37 @@ class NewRole extends Component {
   }
 
   render() {
-        return (
-          <div className="loginmodal-container">
-          <form onSubmit={this.handleSubmit}>
+    return (
+      <div className="loginmodal-container">
+      <form onSubmit={this.handleSubmit}>
 
-          <label htmlFor="role">Select role:</label>
-          <select class="form-control" id="role" name="role" onChange={this.handleChange}>
-            <option>Role 1</option>
-            <option>Role 2</option>
-            <option>Role 3</option>
-            <option>Role 4</option>
-          </select>
+      <label htmlFor="role">Select role:</label>
+      <select class="form-control" id="role" name="role" onChange={this.handleChange}>
+      <option>Role 1</option>
+      <option>Role 2</option>
+      <option>Role 3</option>
+      <option>Role 4</option>
+      </select>
 
-          <label htmlFor="region">Select region:</label>
-          <select class="form-control" id="region" name="region" onChange={this.handleChange}>
-            <option>Europe</option>
-            <option>Asia</option>
-            <option>Africa</option>
-            <option>America</option>
-          </select>
+      <label htmlFor="region">Select region:</label>
+      <select class="form-control" id="region" name="region" onChange={this.handleChange}>
+      <option>Europe</option>
+      <option>Asia</option>
+      <option>Africa</option>
+      <option>America</option>
+      </select>
 
-          <br/>
+      <br/>
 
-          <div className="submit-button-div">
-          <input type="submit" value="Request this role" />
-          </div>
+      <div className="submit-button-div">
+      <input type="submit" value="Request this role" />
+      </div>
 
-          </form>
-          </div>
+      </form>
+      </div>
 
-          );
-      }
+      );
+  }
 }
 
 class NavBar extends Component {
